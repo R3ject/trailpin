@@ -1,5 +1,6 @@
 // src/components/FilterPanel.jsx
 import React, { useState } from 'react';
+import './FilterPanel.css';
 
 const FilterPanel = ({ onFilterChange }) => {
   const [trailName, setTrailName] = useState('');
@@ -13,30 +14,30 @@ const FilterPanel = ({ onFilterChange }) => {
   return (
     <div className="filter-panel">
       <h2>Filters</h2>
-      <label>
-        Trail Name:
+      <div className="filter-item">
+        <label>Trail Name:</label>
         <input 
           type="text" 
           value={trailName} 
           onChange={(e) => setTrailName(e.target.value)} 
         />
-      </label>
-      <label>
-        Start Date:
+      </div>
+      <div className="filter-item">
+        <label>Start Date:</label>
         <input 
           type="date" 
           value={startDate} 
           onChange={(e) => setStartDate(e.target.value)} 
         />
-      </label>
-      <label>
-        End Date:
+      </div>
+      <div className="filter-item">
+        <label>End Date:</label>
         <input 
           type="date" 
           value={endDate} 
           onChange={(e) => setEndDate(e.target.value)} 
         />
-      </label>
+      </div>
       <button onClick={handleFilter}>Apply Filters</button>
     </div>
   );

@@ -1,118 +1,90 @@
 /* App.css */
-
-/* Global resets */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+:root {
+  --spacing-small: 8px;
+  --spacing-medium: 16px;
+  --spacing-large: 24px;
+  --primary-color: #007bff;
+  --secondary-color: #ff416c;
 }
 
 body {
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  background-color: #f4f4f4;
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  background-color: #f7f9fc;
   color: #333;
 }
 
-/* App container */
 .app-container {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  padding: var(--spacing-medium);
 }
 
-/* Header */
 .app-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #007bff;
+  padding: var(--spacing-medium);
+  background-color: var(--primary-color);
   color: #fff;
-  padding: 1rem;
 }
 
-/* Main content container */
 .container {
   display: flex;
   flex: 1;
-  padding: 20px;
+  gap: var(--spacing-medium);
+  padding: var(--spacing-medium);
   max-width: 1200px;
-  margin: 0 auto;
+  margin: var(--spacing-medium) auto;
 }
 
-/* Main content area */
+.main, .sidebar {
+  background-color: #fff;
+  padding: var(--spacing-medium);
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
 .main {
   flex: 2;
-  padding: 20px;
-  background-color: #fff;
-  border-radius: 8px;
-  margin-right: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Sidebar area */
 .sidebar {
   flex: 1;
-  padding: 20px;
+}
+
+/* Global button styles */
+button {
+  cursor: pointer;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 30px;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 10px rgba(0,0,0,0.15);
+}
+
+.app-header button {
+  background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+  color: #fff;
+}
+
+/* Auth container and forms */
+.auth-container, .auth-form {
+  max-width: 400px;
+  margin: var(--spacing-large) auto;
+  padding: var(--spacing-medium);
   background-color: #fff;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* Auth container for sign in/up forms */
-.auth-container {
-  max-width: 400px;
-  margin: 3rem auto;
-  padding: 1rem;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* Form container for add pin form */
-.form-container {
-  margin-top: 20px;
-}
-
-/* Bounce animation for markers */
-@keyframes bounce {
-  0% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0); }
-}
-
-.bounce {
-  animation: bounce 0.5s;
-}
-
-/* Responsive styles */
-@media (max-width: 768px) {
-  .container {
-    flex-direction: column;
-  }
-  .main {
-    margin-right: 0;
-    margin-bottom: 20px;
-  }
-}
-
-/* Additional styling for authentication forms */
-/* Center the authentication container */
-.auth-container {
-  max-width: 400px;
-  margin: 3rem auto;
-  padding: 1rem;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   text-align: center;
-}
-
-/* Auth form specific styling */
-.auth-form {
-  width: 100%;
 }
 
 .auth-form form {
@@ -123,15 +95,15 @@ body {
 
 .auth-form label {
   width: 100%;
-  margin-bottom: 0.5rem;
-  font-weight: bold;
   text-align: left;
+  margin-bottom: var(--spacing-small);
+  font-weight: bold;
 }
 
 .auth-form input {
   width: 100%;
   padding: 0.75rem;
-  margin-bottom: 1rem;
+  margin-bottom: var(--spacing-medium);
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 1rem;
@@ -139,85 +111,52 @@ body {
 
 .auth-form button {
   width: 100%;
-  padding: 0.75rem;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.auth-form button:hover {
-  background-color: #0056b3;
-}
-
-.auth-form .error {
-  color: red;
-  margin-bottom: 1rem;
-}
-
-/* Global button styles */
-button {
-  cursor: pointer;
-  border: none;
-  padding: 0.75rem 1.25rem;
-  border-radius: 25px;
-  font-size: 1rem;
-  transition: background 0.3s ease, transform 0.2s ease;
-}
-
-button:hover {
-  transform: translateY(-2px);
-}
-
-/* App header button */
-.app-header button {
-  background: linear-gradient(45deg, #ff416c, #ff4b2b);
+  background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
   color: #fff;
 }
 
-/* Auth form buttons */
-.auth-form button {
-  width: 100%;
-  background: linear-gradient(45deg, #1e90ff, #00bfff);
-  color: #fff;
+/* Modal styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
 }
 
-/* Modal buttons */
-.modal-btn {
-  margin: 0.5rem;
-  background: linear-gradient(45deg, #32cd32, #228b22);
-  color: #fff;
-}
-.modal-btn.delete-btn {
-  background: linear-gradient(45deg, #ff4b2b, #ff416c);
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-/* FilterPanel styles */
-.filter-panel {
-  padding: 1rem;
-  margin-bottom: 1rem;
-  background-color: #f9f9f9;
+.modal-content {
+  background: #fff;
+  padding: var(--spacing-medium);
   border-radius: 8px;
+  max-width: 600px;
+  width: 90%;
+  position: relative;
 }
 
-.filter-panel h2 {
-  margin-bottom: 1rem;
+.close-btn {
+  position: absolute;
+  top: var(--spacing-small);
+  right: var(--spacing-small);
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
 }
 
-.filter-panel label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: bold;
-}
-
-.filter-panel input,
-.filter-panel select {
-  width: 100%;
-  padding: 0.5rem;
-  margin-bottom: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
 }

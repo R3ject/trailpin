@@ -18,7 +18,6 @@ const PinModal = lazy(() => import('./components/PinModal'));
 const RideTrendsChart = lazy(() => import('./components/RideTrendsChart'));
 
 function App() {
-  // State declarations
   const [pins, setPins] = useState([]);
   const [newPinCoords, setNewPinCoords] = useState(null);
   const [selectedPin, setSelectedPin] = useState(null);
@@ -26,7 +25,7 @@ function App() {
   const [user, setUser] = useState(null);
   const [showSignUp, setShowSignUp] = useState(false);
 
-  // Persist authentication state
+  // Persist authentication state with Firebase.
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -34,12 +33,13 @@ function App() {
     return unsubscribe;
   }, []);
 
-  // Geolocation "Locate Me" handler
+  // Geolocation "Locate Me" handler.
   const handleLocateMe = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
+          // Convert Leaflet's LatLng to a plain object.
           setNewPinCoords({ lat: latitude, lng: longitude });
         },
         (error) => {
@@ -52,7 +52,7 @@ function App() {
     }
   };
 
-  // Load pins on mount: from Firestore if authenticated, else local storage.
+  // Load pins on mount.
   useEffect(() => {
     if (user) {
       loadPinsFromFirestore(user.uid).then((loadedPins) => setPins(loadedPins));
@@ -66,7 +66,7 @@ function App() {
     savePins(pins);
   }, [pins]);
 
-  // If no user is signed in, show the authentication UI.
+  // Show authentication UI if no user is signed in.
   if (!user) {
     return (
       <div className="auth-container">
@@ -91,7 +91,7 @@ function App() {
     );
   }
 
-  // Filtering logic: only show pins that match the filter criteria.
+  // Filtering logic.
   const filteredPins = pins.filter((pin) => {
     const matchesName = pin.trailName.toLowerCase().includes(filter.trailName.toLowerCase());
     const pinDate = new Date(pin.date);
@@ -104,7 +104,6 @@ function App() {
 
   // Map click handler.
   const handleMapClick = (e) => {
-    // Convert Leaflet's LatLng to a plain object
     const { lat, lng } = e.latlng;
     setNewPinCoords({ lat, lng });
     setSelectedPin(null);
@@ -126,7 +125,6 @@ function App() {
     const fullPinData = { ...pinData, photos: photoUrls, coords: newPinCoords, userId: user ? user.uid : 'guest' };
     const updatedPins = [...pins, fullPinData];
     setPins(updatedPins);
-    // Save to Firestore if user is authenticated.
     if (user) {
       try {
         await savePinToFirestore(fullPinData, user.uid);
@@ -139,14 +137,11 @@ function App() {
 
   // Delete pin handler.
   const handleDeletePin = async (pin) => {
-    // Update UI immediately by removing the pin from state.
     const updatedPins = pins.filter((p) => p.id !== pin.id);
     setPins(updatedPins);
-    // If the deleted pin is currently shown in the modal, clear it.
     if (selectedPin && selectedPin.id === pin.id) {
       setSelectedPin(null);
     }
-    // Delete from Firestore if the pin has an ID and user is authenticated.
     if (user && pin.id) {
       try {
         await deletePinFromFirestore(pin.id);
@@ -156,7 +151,7 @@ function App() {
     }
   };
 
-  // Handlers for timeline selection, filter changes, and editing.
+  // Other handlers.
   const handleSelectPin = (pin) => setSelectedPin(pin);
   const handleFilterChange = (newFilter) => setFilter(newFilter);
   const handleEditPin = (pin) => {
