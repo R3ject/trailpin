@@ -4,6 +4,7 @@ import MapView from './components/MapView';
 import AddPinForm from './components/AddPinForm';
 import Timeline from './components/Timeline';
 import FilterPanel from './components/FilterPanel';
+import SearchLocation from './components/SearchLocation';
 import SignIn from './components/SignIn';
 import SignUp from './components/SignUp';
 import { savePins, loadPins } from './utils/storage';
@@ -18,14 +19,20 @@ const PinModal = lazy(() => import('./components/PinModal'));
 const RideTrendsChart = lazy(() => import('./components/RideTrendsChart'));
 
 function App() {
+  // State declarations
   const [pins, setPins] = useState([]);
   const [newPinCoords, setNewPinCoords] = useState(null);
   const [selectedPin, setSelectedPin] = useState(null);
-  const [filter, setFilter] = useState({ trailName: '', startDate: '', endDate: '' });
+  const [filter, setFilter] = useState({
+    trailName: '',
+    state: '',
+    startDate: '',
+    endDate: '',
+  });
   const [user, setUser] = useState(null);
   const [showSignUp, setShowSignUp] = useState(false);
 
-  // Persist authentication state with Firebase.
+  // Persist authentication state via Firebase
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -33,13 +40,13 @@ function App() {
     return unsubscribe;
   }, []);
 
-  // Geolocation "Locate Me" handler.
+  // Geolocation "Locate Me" handler
   const handleLocateMe = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          // Convert Leaflet's LatLng to a plain object.
+          // Convert Leaflet's LatLng to a plain object
           setNewPinCoords({ lat: latitude, lng: longitude });
         },
         (error) => {
@@ -52,7 +59,12 @@ function App() {
     }
   };
 
-  // Load pins on mount.
+  // Handler for SearchLocation component (when a user types an address)
+  const handleSearchLocation = (coords) => {
+    setNewPinCoords(coords);
+  };
+
+  // Load pins on mount: from Firestore if authenticated, else from local storage.
   useEffect(() => {
     if (user) {
       loadPinsFromFirestore(user.uid).then((loadedPins) => setPins(loadedPins));
@@ -66,7 +78,7 @@ function App() {
     savePins(pins);
   }, [pins]);
 
-  // Show authentication UI if no user is signed in.
+  // If no user is signed in, display the authentication UI.
   if (!user) {
     return (
       <div className="auth-container">
@@ -74,7 +86,7 @@ function App() {
           <>
             <SignUp onSignUp={setUser} />
             <p>
-              Already have an account?{' '}
+              Already have an account?{" "}
               <button onClick={() => setShowSignUp(false)}>Sign In</button>
             </p>
           </>
@@ -82,7 +94,7 @@ function App() {
           <>
             <SignIn onSignIn={setUser} />
             <p>
-              Don't have an account?{' '}
+              Don't have an account?{" "}
               <button onClick={() => setShowSignUp(true)}>Sign Up</button>
             </p>
           </>
@@ -91,15 +103,18 @@ function App() {
     );
   }
 
-  // Filtering logic.
+  // Filtering logic: only show pins that match filter criteria.
   const filteredPins = pins.filter((pin) => {
-    const matchesName = pin.trailName.toLowerCase().includes(filter.trailName.toLowerCase());
+    const matchesName = pin.trailName
+      .toLowerCase()
+      .includes(filter.trailName.toLowerCase());
+    const matchesState = filter.state ? pin.state === filter.state : true;
     const pinDate = new Date(pin.date);
     const startDate = filter.startDate ? new Date(filter.startDate) : null;
     const endDate = filter.endDate ? new Date(filter.endDate) : null;
     const matchesStart = startDate ? pinDate >= startDate : true;
     const matchesEnd = endDate ? pinDate <= endDate : true;
-    return matchesName && matchesStart && matchesEnd;
+    return matchesName && matchesState && matchesStart && matchesEnd;
   });
 
   // Map click handler.
@@ -122,7 +137,12 @@ function App() {
         }
       }
     }
-    const fullPinData = { ...pinData, photos: photoUrls, coords: newPinCoords, userId: user ? user.uid : 'guest' };
+    const fullPinData = {
+      ...pinData,
+      photos: photoUrls,
+      coords: newPinCoords,
+      userId: user ? user.uid : "guest",
+    };
     const updatedPins = [...pins, fullPinData];
     setPins(updatedPins);
     if (user) {
@@ -151,19 +171,22 @@ function App() {
     }
   };
 
-  // Other handlers.
+  // Handlers for timeline selection, filter changes, and editing.
   const handleSelectPin = (pin) => setSelectedPin(pin);
   const handleFilterChange = (newFilter) => setFilter(newFilter);
   const handleEditPin = (pin) => {
-    console.log('Edit pin:', pin);
-    // Implement editing functionality as desired.
+    console.log("Edit pin:", pin);
+    // Implement editing functionality (e.g., open an EditPinForm)
   };
 
   return (
     <div className="app-container">
       <header className="app-header">
         <h1>TrailPin</h1>
-        <button onClick={handleLocateMe}>Locate Me</button>
+        <div className="header-buttons">
+          <button onClick={handleLocateMe}>Locate Me</button>
+          <SearchLocation onSearch={handleSearchLocation} />
+        </div>
       </header>
       <div className="container">
         <div className="main">

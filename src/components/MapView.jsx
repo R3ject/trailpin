@@ -1,12 +1,12 @@
 // src/components/MapView.jsx
-import React from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
+import React, { useEffect } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-markercluster';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import bikeIcon from '../assets/bike.svg';
+import './MapView.css';
 
-// Create a custom Leaflet icon using your bike.svg
 const customIcon = L.icon({
   iconUrl: bikeIcon,
   iconSize: [32, 32],
@@ -14,13 +14,23 @@ const customIcon = L.icon({
   popupAnchor: [0, -32]
 });
 
-// A component to capture click events on the map and call onMapClick prop
-function ClickHandler({ onMapClick }) {
-  useMapEvents({
-    click: (e) => {
-      onMapClick(e);
+function AutoZoom({ pins }) {
+  const map = useMap();
+  useEffect(() => {
+    if (pins.length > 0) {
+      const bounds = L.latLngBounds(pins.map(pin => [pin.coords.lat, pin.coords.lng]));
+      map.fitBounds(bounds, { padding: [50, 50] });
     }
-  });
+  }, [pins, map]);
+  return null;
+}
+
+function MapClickHandler({ onMapClick }) {
+  const map = useMap();
+  useEffect(() => {
+    map.on('click', onMapClick);
+    return () => map.off('click', onMapClick);
+  }, [map, onMapClick]);
   return null;
 }
 
@@ -33,21 +43,16 @@ const MapView = ({ pins, onMapClick }) => {
       />
       <MarkerClusterGroup>
         {pins.map((pin, index) => (
-          <Marker
-            key={index}
-            position={[pin.coords.lat, pin.coords.lng]}
-            icon={customIcon}
-            // Removed any reference to handleLocateMe here.
-          >
+          <Marker key={index} position={[pin.coords.lat, pin.coords.lng]} icon={customIcon}>
             <Popup>
-              <strong>{pin.trailName}</strong>
-              <br />
+              <strong>{pin.trailName}</strong><br />
               {pin.date}
             </Popup>
           </Marker>
         ))}
       </MarkerClusterGroup>
-      <ClickHandler onMapClick={onMapClick} />
+      <AutoZoom pins={pins} />
+      <MapClickHandler onMapClick={onMapClick} />
     </MapContainer>
   );
 };

@@ -1,25 +1,52 @@
 // src/components/SocialShare.jsx
 import React from 'react';
+import './SocialShare.css';
 
 const SocialShare = ({ pin }) => {
-  const shareUrl = window.location.href; // Or a specific URL for the pin
-  const shareText = `Check out my ride on ${pin.trailName} on TrailPin!`;
+  if (!pin) return null;
+
+  const shareContent = {
+    title: "My TrailPin Ride",
+    text: `Check out my ride on ${pin.trailName} on TrailPin!`,
+    url: window.location.href
+  };
+
+  const shareToTwitter = () => {
+    window.open(
+      `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareContent.text)}&url=${encodeURIComponent(shareContent.url)}`,
+      '_blank'
+    );
+  };
+
+  const shareToFacebook = () => {
+    window.open(
+      `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareContent.url)}&quote=${encodeURIComponent(shareContent.text)}`,
+      '_blank'
+    );
+  };
+
+  const shareToInstagram = () => {
+    // Use Web Share API for Instagram (if available)
+    if (navigator.share) {
+      navigator.share(shareContent).catch((err) => {
+        console.error("Instagram share failed:", err);
+      });
+    } else {
+      // Fallback: Open Instagram homepage
+      window.open("https://www.instagram.com/", "_blank");
+    }
+  };
+
+  const shareViaEmail = () => {
+    window.location.href = `mailto:?subject=${encodeURIComponent(shareContent.title)}&body=${encodeURIComponent(shareContent.text + " " + shareContent.url)}`;
+  };
 
   return (
-    <div>
-      <a
-        href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Share on Twitter
-      </a>
-      <br />
-      <a
-        href={`mailto:?subject=My TrailPin Ride&body=${encodeURIComponent(shareText + ' ' + shareUrl)}`}
-      >
-        Share via Email
-      </a>
+    <div className="social-share">
+      <button className="share-btn" onClick={shareToTwitter}>Share on Twitter</button>
+      <button className="share-btn" onClick={shareToFacebook}>Share on Facebook</button>
+      <button className="share-btn" onClick={shareToInstagram}>Share on Instagram</button>
+      <button className="share-btn" onClick={shareViaEmail}>Share via Email</button>
     </div>
   );
 };

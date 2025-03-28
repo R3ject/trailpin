@@ -38,13 +38,22 @@
     cursor: pointer;
   }
   
-  /* Ensure images do not exceed container dimensions */
-  .modal-photos img {
-    display: block;
-    max-width: 100%;
-    max-height: 300px; /* Adjust this value as needed */
-    object-fit: contain;
-    margin-bottom: 1rem;
+  /* Constrain the photo gallery to a single horizontal row */
+  .modal-photos .thumbnail-gallery {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    overflow-x: auto;
+    max-height: 100px; /* Fixed max height for the gallery */
+  }
+  
+  .thumbnail {
+    height: 80px;
+    width: auto;
+    object-fit: cover;
+    cursor: pointer;
+    border-radius: 4px;
+    flex-shrink: 0;
   }
   
   .modal-buttons {
